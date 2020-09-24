@@ -54,23 +54,36 @@ let pullPage = async function (url) {
 }
 
 let doStuff = async function () {
-    let max = 2 //2810
-    for (var t = 0; t <= max; t++) {
-        await pullPage(`https://yellowpageskenya.com/search-results?what=Buildings&where=Nairobi&page=${t}`)
-    }
+    let start = 0;
+    let max = 3741;
+    for (var t = start; t <= max; t++) {
+        myData = []
+        
+        // Searching text
+        // await pullPage(`https://yellowpageskenya.com/search-results?what=NGO&where=Nairobi&page=${t}`)
 
-    const { Parser } = require('json2csv')
-    const fields = ['name', 'address', 'telephone', 'category', 'website']
-    const opts = { fields }
+        // Kenya
+        await pullPage(`https://yellowpageskenya.com/search-results?what=Non-Governmental%20Organizations&where=Nairobi&page=${t}`)
 
-    try {
-        const parser = new Parser(opts);
-        const csv = parser.parse(myData);
-        console.log(csv)
-        fs.writeFile("ouput.csv", csv)
-    } catch (err) {
-        console.error(err);
+        const { Parser } = require('json2csv')
+        const fields = ['name', 'address', 'telephone', 'category', 'website']
+        const opts = { fields }
+
+        try {
+            const parser = new Parser(opts);
+            let csv = parser.parse(myData);
+            if (true) {
+                let allLines = csv.split("\n")
+                let withoutTitle = allLines.slice(1, allLines.length);
+                csv = withoutTitle.join("\n") + "\n";
+            }
+            fs.appendFileSync("ouput.csv", csv)
+        } catch (err) {
+            console.error(err);
+        }
     }
 }
 
 doStuff()
+
+// To see categories : https://yellowpageskenya.com/business-categories-diverse-groups-related-businesses-listings?title=
